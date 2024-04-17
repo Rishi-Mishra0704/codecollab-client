@@ -1,28 +1,42 @@
 "use client";
 import React, { useState } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Button } from "react-bootstrap";
 import CodeEditor from "@/components/Editor";
 import FileFolder from "@/components/FileFolder";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Video from "@/components/video";
 import TerminalController from "@/components/Terminal";
+import OutputComponent from "@/components/Output";
 
 export default function Page() {
   // State to hold the file content
   const [fileContent, setFileContent] = useState("");
   const [fileExtension, setFileExtension] = useState("");
-
+  const [output, setOutput] = useState<string | null>(null);
+  const [view, setView] = useState<"terminal" | "output">("terminal");
   // Function to update the file content and extension
   const updateFileContent = (content: string, extension: string) => {
     setFileContent(content);
     setFileExtension(extension);
   };
 
+  const handleOutput = (output: string) => {
+    setOutput(output);
+  };
+
+  const toggleView = () => {
+    setView(view === "terminal" ? "output" : "terminal");
+  };
+
+  const getViewName = () => {
+    return view === "terminal" ? "Output" : "Terminal";
+  };
+
   return (
     <Container
       fluid
       className="bg-dark text-light"
-      style={{display: "flex", flexDirection: "column"}}
+      style={{ display: "flex", flexDirection: "column" }}
     >
       <Row style={{ flex: 1 }}>
         {/* FileFolder component */}
@@ -38,8 +52,15 @@ export default function Page() {
                 fileContent={fileContent}
                 fileExtension={fileExtension}
                 className="w-100 m-2"
+                handleOutput={handleOutput}
               />
-              <TerminalController className="m-2" />
+              <Button variant="secondary" onClick={toggleView}>{getViewName()}</Button>
+              {/* Dynamically display the name of the current view */}
+              {view === "terminal" ? (
+                <TerminalController className="m-2" />
+              ) : (
+                <OutputComponent output={output} />
+              )}
             </Col>
             <Col sm={3}>
               <Video />

@@ -7,9 +7,10 @@ interface EditorProps {
   fileContent: string;
   fileExtension: string;
   className:string
+  handleOutput: (output: string) => void;
 }
 
-const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension }) => {
+const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleOutput }) => {
   const [theme, setTheme] = useState<string>("monokai");
   const [code, setCode] = useState<string>("");
   const [responseData, setResponseData] = useState<any>(null);
@@ -68,14 +69,9 @@ const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension }) => {
           code: code,
         }),
       });
-      console.log(fileExtension);
-      console.log(code);
-
       const data = await response.json();
       setResponseData(data.output);
-      console.log(data.output);
-
-      // Here you can do something with the response, such as displaying it
+      handleOutput(data.output);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -133,13 +129,6 @@ const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension }) => {
           />
         </Col>
       </Row>
-      {responseData && (
-        <Row className="mt-3">
-          <Col>
-            <pre className="fs-5">{responseData}</pre>
-          </Col>
-        </Row>
-      )}
     </Container>
   );
 };
