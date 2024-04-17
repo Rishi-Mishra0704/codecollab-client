@@ -1,18 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { ListGroup, Form, Button } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { ListGroup, Form, Button } from "react-bootstrap";
 
 interface FileFolderProps {
   updateFileContent: (content: string, extension: string) => void;
 }
 
+type File = {
+  name: string;
+  type: string;
+};
+
 const FileFolder: React.FC<FileFolderProps> = ({ updateFileContent }) => {
-  const [path, setPath] = useState('');
+  const [path, setPath] = useState("");
   const [isFolder, setIsFolder] = useState(false);
-  const [message, setMessage] = useState('');
-  const [files, setFiles] = useState<string[]>([]);
-  const [selectedFile, setSelectedFile] = useState<string>('');
-  const [fileContent, setFileContent] = useState<string>('');
+  const [message, setMessage] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const [selectedFile, setSelectedFile] = useState<string>("");
+  const [fileContent, setFileContent] = useState<string>("");
 
   useEffect(() => {
     setFileContent(fileContent); // Log the file content when it changes
@@ -20,11 +25,12 @@ const FileFolder: React.FC<FileFolderProps> = ({ updateFileContent }) => {
 
   const createFileOrFolder = async () => {
     try {
-      const response = await axios.post('http://localhost:8080/create', {
+      const response = await axios.post("http://localhost:8080/create", {
         path: path,
-        isFolder: isFolder
+        isFolder: isFolder,
       });
       setMessage(response.data.message);
+      listFiles();
     } catch (error: any) {
       setMessage(error.response.data.error);
     }
@@ -32,27 +38,39 @@ const FileFolder: React.FC<FileFolderProps> = ({ updateFileContent }) => {
 
   const listFiles = async () => {
     try {
-      const response = await axios.post('http://localhost:8080/list', {
-        path: path
+      const response = await axios.post("http://localhost:8080/list", {
+        path: path,
       });
       setFiles(response.data.files);
     } catch (error) {
-      console.error('Error listing files:', error);
+      console.error("Error listing files:", error);
     }
   };
 
   const readFileContent = async (fileName: string) => {
     try {
-      const response = await axios.post('http://localhost:8080/read', {
-        path: `${path}/${fileName}`
+      const response = await axios.post("http://localhost:8080/read", {
+        path: `${path}/${fileName}`,
       });
       // Extract file extension from file name
-      const fileExtension = fileName.split('.').pop() || '';
+      const fileExtension = fileName.split(".").pop() || "";
       updateFileContent(response.data.content, fileExtension);
       setFileContent(response.data.content);
       setSelectedFile(fileName);
     } catch (error) {
-      console.error('Error reading file content:', error);
+      console.error("Error reading file content:", error);
+    }
+  };
+
+  const handleClick = async (filePath: string) => {
+    try {
+      const response = await axios.post("http://localhost:8080/list", {
+        path: filePath,
+      });
+      setPath(filePath);
+      setFiles(response.data.files);
+    } catch (error) {
+      console.error("Error reading file content:", error);
     }
   };
 
@@ -62,7 +80,7 @@ const FileFolder: React.FC<FileFolderProps> = ({ updateFileContent }) => {
         <Form.Control
           type="text"
           placeholder="Enter path"
-          className=''
+          className=""
           value={path}
           onChange={(e) => setPath(e.target.value)}
         />
@@ -73,20 +91,33 @@ const FileFolder: React.FC<FileFolderProps> = ({ updateFileContent }) => {
           onChange={(e) => setIsFolder(e.target.checked)}
         />
       </Form.Group>
-      <Button variant="primary" onClick={createFileOrFolder}>Create</Button>{' '}
-      <Button variant="info" onClick={listFiles}>List Files</Button>
+      <Button variant="primary" onClick={createFileOrFolder}>
+        Create
+      </Button>{" "}
+      <Button variant="info" onClick={listFiles}>
+        List Files
+      </Button>
       {files.length > 0 && (
-        <div style={{ maxHeight: '450px', overflowY: 'auto' }}>
+        <div style={{ maxHeight: "450px", overflowY: "auto" }}>
           <ListGroup>
-            {files.map((fileName, index) => (
+            {files.map((file, index) => (
               <ListGroup.Item
                 key={index}
                 action
-                active={selectedFile === fileName}
-                onClick={() => readFileContent(fileName)}
+                active={selectedFile === file.name}
+                onClick={() => {
+                  const filePath = path.endsWith("/")
+                    ? `${path}${file.name}`
+                    : `${path}/${file.name}`;
+                  if (file.type === "file") {
+                    readFileContent(file.name);
+                  } else {
+                    handleClick(filePath);
+                  }
+                }}
                 className="file-item"
               >
-                {fileName}
+                {file.name}
               </ListGroup.Item>
             ))}
           </ListGroup>
@@ -94,6 +125,6 @@ const FileFolder: React.FC<FileFolderProps> = ({ updateFileContent }) => {
       )}
     </div>
   );
-}
+};
 
 export default FileFolder;
