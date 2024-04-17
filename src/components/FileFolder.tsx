@@ -15,7 +15,7 @@ const FileFolder: React.FC<FileFolderProps> = ({ updateFileContent }) => {
   const [fileContent, setFileContent] = useState<string>('');
 
   useEffect(() => {
-    console.log("File content:", fileContent); // Log the file content when it changes
+    setFileContent(fileContent); // Log the file content when it changes
   }, [fileContent]);
 
   const createFileOrFolder = async () => {
@@ -76,19 +76,21 @@ const FileFolder: React.FC<FileFolderProps> = ({ updateFileContent }) => {
       <Button variant="primary" onClick={createFileOrFolder}>Create</Button>{' '}
       <Button variant="info" onClick={listFiles}>List Files</Button>
       {files.length > 0 && (
-        <ListGroup>
-          {files.map((fileName, index) => (
-            <ListGroup.Item
-              key={index}
-              action
-              active={selectedFile === fileName}
-              onClick={() => readFileContent(fileName)}
-              className="file-item"
-            >
-              {fileName}
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+        <div style={{ maxHeight: '450px', overflowY: 'auto' }}>
+          <ListGroup>
+            {files.map((fileName, index) => (
+              <ListGroup.Item
+                key={index}
+                action
+                active={selectedFile === fileName}
+                onClick={() => readFileContent(fileName)}
+                className="file-item"
+              >
+                {fileName}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </div>
       )}
     </div>
   );

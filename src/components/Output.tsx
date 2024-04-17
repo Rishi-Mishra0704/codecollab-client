@@ -17,7 +17,7 @@ const OutputComponent: React.FC<OutputProps> = ({ output }) => {
         <Col>
           <Card>
             <Card.Body>
-              {output ? <pre>{output}</pre> : <div className="text-muted text-center">No output available</div>}
+              {output ? <pre>{output}</pre> : <div className="text-muted text-center">Please Run Your Code</div>}
             </Card.Body>
           </Card>
         </Col>
