@@ -37,6 +37,26 @@ export type Peer = {
   online: boolean;
 };
 
+
 export type createRoomResponse = {
   room_id: string;
 };
+
+export interface Peer {
+  id: string;
+  name: string;
+  email: string;
+  address: string;
+  online: boolean;
+}
+
+export interface Room {
+  id: string;
+  host: Peer;
+  peers: { [key: string]: Peer };
+  chat: string[];
+}
+
+export interface Rooms {
+  rooms: { [key: string]: Room };
+}
