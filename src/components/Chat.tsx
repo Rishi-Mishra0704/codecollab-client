@@ -87,7 +87,7 @@ const Chat: React.FC<RoomParams> = (props: RoomParams) => {
                   onChange={(e) => setInputMessage(e.target.value)}
                 />
               </Form.Group>
-              <Button variant="primary" type="submit">
+              <Button variant="primary" className="m-3" type="submit">
                 Send
               </Button>
             </Form>
