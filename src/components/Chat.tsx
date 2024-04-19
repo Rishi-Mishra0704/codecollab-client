@@ -1,11 +1,11 @@
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { Message, RoomParams, chatResponse } from "@/types";
 
 const Chat: React.FC<RoomParams> = (props: RoomParams) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState<string>("");
-  const [sendMessage, setSendMessage] = useState<boolean>(false); // State to track if Send button is clicked
+  const [sendMessage, setSendMessage] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchChat = async () => {
@@ -30,13 +30,16 @@ const Chat: React.FC<RoomParams> = (props: RoomParams) => {
             throw new Error("Failed to fetch or send chat messages");
           }
 
-          const data = await response.json() as chatResponse;
+          const data = (await response.json()) as chatResponse;
           console.log(data);
-          
-          setMessages(data.chat_history.map((msg: string) => ({
-            message: msg,
-            senderId: msg.split(":")[1].trim(),
-          })));
+
+          setMessages(
+            data.chat_history.map((msg: string) => ({
+              message: msg,
+              senderId: msg.split(":")[1].trim(),
+            })) // Set the date when the Send button is clicked
+          );
+
           setInputMessage("");
         } catch (error) {
           console.error("Error fetching or sending chat messages:", error);
@@ -55,13 +58,15 @@ const Chat: React.FC<RoomParams> = (props: RoomParams) => {
   return (
     <Container className="py-4">
       <Row>
-        <Col md={{ span: 6, offset: 0 }}>
-          <div className="chat-container">
-            <div className="chat-messages">
+        <Col md={{ span: 12 }}>
+          <Card className="bg-dark-secondary">
+            <Card.Body>
               {messages.map((message, index) => (
-                <div key={index}>{message.message}</div>
+                <Card.Text
+                  key={index}
+                >{`${message.message}`}</Card.Text>
               ))}
-            </div>
+            </Card.Body>
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="formMessage">
                 <Form.Control
@@ -75,7 +80,7 @@ const Chat: React.FC<RoomParams> = (props: RoomParams) => {
                 Send
               </Button>
             </Form>
-          </div>
+          </Card>
         </Col>
       </Row>
     </Container>
