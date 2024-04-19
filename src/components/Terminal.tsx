@@ -1,10 +1,8 @@
+import { TerminalControllerProps } from '@/types';
 import React, { useState, useEffect, useRef } from 'react';
 import { Container } from 'react-bootstrap';
 import Terminal, { ColorMode, TerminalOutput } from 'react-terminal-ui';
 
-interface TerminalControllerProps {
-  className?: string;
-}
 
 const TerminalController: React.FC<TerminalControllerProps> = () => {
   const [terminalLineData, setTerminalLineData] = useState([

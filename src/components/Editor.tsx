@@ -1,14 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Col, Container, Dropdown, Row } from "react-bootstrap";
 import AceEditor from "react-ace";
-import { supportedLanguages, supportedThemes } from "@/utils/imports";
+import { supportedThemes } from "@/utils/imports";
 import { getModeForExtension } from "@/utils/extentions";
-interface EditorProps {
-  fileContent: string;
-  fileExtension: string;
-  className:string
-  handleOutput: (output: string) => void;
-}
+import { EditorProps } from "@/types";
 
 const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleOutput }) => {
   const [theme, setTheme] = useState<string>("monokai");

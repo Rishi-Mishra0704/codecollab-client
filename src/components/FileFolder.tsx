@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ListGroup, Form, Button } from "react-bootstrap";
+import { File, FileFolderProps } from "@/types";
 
-interface FileFolderProps {
-  updateFileContent: (content: string, extension: string) => void;
-}
-
-type File = {
-  name: string;
-  type: string;
-};
 
 const FileFolder: React.FC<FileFolderProps> = ({ updateFileContent }) => {
   const [path, setPath] = useState("");

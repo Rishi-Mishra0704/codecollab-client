@@ -4,9 +4,9 @@ import { Container, Row, Col, Button } from "react-bootstrap";
 import CodeEditor from "@/components/Editor";
 import FileFolder from "@/components/FileFolder";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Video from "@/components/video";
 import TerminalController from "@/components/Terminal";
 import OutputComponent from "@/components/Output";
+import Chat from "@/components/Chat";
 
 export default function Page() {
   // State to hold the file content
@@ -63,7 +63,7 @@ export default function Page() {
               )}
             </Col>
             <Col sm={3}>
-              <Video />
+              <Chat/>
             </Col>
           </Row>
         </Col>

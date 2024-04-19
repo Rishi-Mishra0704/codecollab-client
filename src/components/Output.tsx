@@ -1,9 +1,6 @@
+import { OutputProps } from '@/types';
 import React from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-
-interface OutputProps {
-  output: string | null;
-}
 
 const OutputComponent: React.FC<OutputProps> = ({ output }) => {
   return (

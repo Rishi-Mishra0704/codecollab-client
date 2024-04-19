@@ -36,11 +36,7 @@ import "ace-builds/src-noconflict/theme-tomorrow_night_eighties";
 import "ace-builds/src-noconflict/theme-twilight";
 import "ace-builds/src-noconflict/theme-vibrant_ink";
 import "ace-builds/src-noconflict/theme-xcode";
-
-interface Language {
-  value: string;
-  label: string;
-}
+import { Language, Theme } from "@/types";
 
 const supportedLanguages: Language[] = [
   { value: "javascript", label: "JavaScript" },
@@ -64,10 +60,6 @@ const supportedLanguages: Language[] = [
   { value: "dart", label: "Dart" },
 ];
 
-interface Theme {
-  value: string;
-  label: string;
-}
 
 const supportedThemes: Theme[] = [
   { value: "monokai", label: "Monokai" },
