@@ -5,54 +5,67 @@ import { Message, RoomParams, chatResponse } from "@/types";
 const Chat: React.FC<RoomParams> = (props: RoomParams) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState<string>("");
-  const [sendMessage, setSendMessage] = useState<boolean>(false);
+
+  const fetchChat = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/rooms/${props.roomId}/chats`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch chat messages");
+      }
+
+      const data = (await response.json()) as chatResponse;
+      setMessages(
+        data.chat_history.map((msg: string) => ({
+          message: msg,
+          senderId: msg.split(":")[1].trim(),
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching chat messages:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchChat = async () => {
-      if (props.roomId && sendMessage) {
-        // Only fetch chat if Send button is clicked
-        try {
-          const response = await fetch(
-            `http://localhost:8080/rooms/${props.roomId}/chat`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                message: inputMessage,
-                sender_id: "host123",
-              }), // Send the message
-            }
-          );
+    if (props.roomId) {
+      fetchChat();
+    }
+  }, [props.roomId]);
 
-          if (!response.ok) {
-            throw new Error("Failed to fetch or send chat messages");
-          }
-
-          const data = (await response.json()) as chatResponse;
-          console.log(data);
-
-          setMessages(
-            data.chat_history.map((msg: string) => ({
-              message: msg,
-              senderId: msg.split(":")[1].trim(),
-            })) // Set the date when the Send button is clicked
-          );
-
-          setInputMessage("");
-        } catch (error) {
-          console.error("Error fetching or sending chat messages:", error);
-        }
-      }
-    };
-
-    fetchChat();
-  }, [props.roomId, sendMessage]); // Trigger effect when roomID or sendMessage changes
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSendMessage(true); // Set sendMessage to true when the Send button is clicked
+    try {
+      const response = await fetch(
+        `http://localhost:8080/rooms/${props.roomId}/send-message`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: inputMessage,
+            sender_id: "host123",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to send chat message");
+      }
+
+      setInputMessage(""); // Clear input after sending message
+      fetchChat(); // Fetch updated chat messages after sending a message
+    } catch (error) {
+      console.error("Error sending chat message:", error);
+    }
   };
 
   return (
@@ -62,9 +75,7 @@ const Chat: React.FC<RoomParams> = (props: RoomParams) => {
           <Card className="bg-dark-secondary">
             <Card.Body>
               {messages.map((message, index) => (
-                <Card.Text
-                  key={index}
-                >{`${message.message}`}</Card.Text>
+                <Card.Text key={index}>{`${message.message}`}</Card.Text>
               ))}
             </Card.Body>
             <Form onSubmit={handleSubmit}>
