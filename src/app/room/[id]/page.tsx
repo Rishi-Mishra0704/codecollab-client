@@ -7,8 +7,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import TerminalController from "@/components/Terminal";
 import OutputComponent from "@/components/Output";
 import Chat from "@/components/Chat";
+import { useParams } from "next/navigation";
 
 export default function Page() {
+  const { id } = useParams();
+  const roomId = id;
+  
   // State to hold the file content
   const [fileContent, setFileContent] = useState("");
   const [fileExtension, setFileExtension] = useState("");
@@ -63,7 +67,7 @@ export default function Page() {
               )}
             </Col>
             <Col sm={3}>
-              <Chat/>
+              <Chat roomId={roomId.toString()} />
             </Col>
           </Row>
         </Col>

@@ -60,3 +60,19 @@ export interface Room {
 export interface Rooms {
   rooms: { [key: string]: Room };
 }
+
+export type Message = {
+  message: string;
+  senderId: string;
+}
+
+
+export type chatResponse = {
+  chat_history: string[];
+  message: string;
+};
+
+
+export interface RoomParams {
+  roomId: string;
+}
