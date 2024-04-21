@@ -41,7 +41,7 @@ const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleO
   useEffect(() => {
     // Send initial file extension to the backend
     if (ws.current && fileExtension) {
-      const message = { fileExtension };
+      const message = { fileExtension, code };
       ws.current.send(JSON.stringify(message));
     }
   }, [fileExtension]);
