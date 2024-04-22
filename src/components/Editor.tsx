@@ -14,6 +14,9 @@ const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleO
 
   useEffect(() => {
     // Connect to WebSocket server
+    fileContent = code;
+    setCode(code);
+
     ws.current = new WebSocket("ws://localhost:8000/collab");
 
     // Set up event listeners
@@ -23,14 +26,18 @@ const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleO
 
     ws.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
+      
       // Update local state with new code received from the server
       setCode(message.content);
     };
-
-    ws.current.onclose = () => {
-      console.log("Disconnected from WebSocket server");
+    ws.current.onclose = (event) => {
+      console.log("Disconnected from WebSocket server:", event.code, event.reason);
     };
-
+    
+    ws.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+    
     // Clean up WebSocket connection
     return () => {
       if (ws.current) {
@@ -40,8 +47,8 @@ const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleO
   }, []);
   useEffect(() => {
     // Send initial file extension to the backend
-    if (ws.current && fileExtension) {
-      const message = { fileExtension, code };
+    if (ws.current && code) {
+      const message = { code };
       ws.current.send(JSON.stringify(message));
     }
   }, [fileExtension]);
