@@ -51,7 +51,7 @@ const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleO
       const message = { code };
       ws.current.send(JSON.stringify(message));
     }
-  }, [fileExtension]);
+  }, [code]);
 
   const mode = getModeForExtension(fileExtension);
   const selectedThemeLabel =
