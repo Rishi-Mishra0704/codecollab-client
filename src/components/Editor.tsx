@@ -4,6 +4,7 @@ import AceEditor from "react-ace";
 import { supportedThemes } from "@/utils/imports";
 import { getModeForExtension } from "@/utils/extentions";
 import { EditorProps } from "@/types";
+import { useParams } from "next/navigation";
 
 const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleOutput }) => {
   const [theme, setTheme] = useState<string>("monokai");
@@ -11,17 +12,15 @@ const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleO
   const [responseData, setResponseData] = useState<any>(null);
 
   const ws = useRef<WebSocket | null>(null);
-
+  const { id } = useParams();
+  const roomId = id;
   useEffect(() => {
-    // Connect to WebSocket server
-    fileContent = code;
-    setCode(code);
-
-    ws.current = new WebSocket("ws://localhost:8000/collab");
+    // Connect to WebSocket server with room_id as a query parameter
+    ws.current = new WebSocket(`ws://localhost:8000/collab?roomId=${roomId}`);
 
     // Set up event listeners
     ws.current.onopen = () => {
-      console.log("Connected to WebSocket server");
+      console.log("Connected to WebSocket server in room", roomId);
     };
 
     ws.current.onmessage = (event) => {
@@ -39,16 +38,16 @@ const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleO
     };
     
     // Clean up WebSocket connection
-    return () => {
-      if (ws.current) {
-        ws.current.close();
-      }
-    };
-  }, []);
+  return () => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.close();
+    }
+  };
+  }, [roomId]);
   useEffect(() => {
     // Send initial file extension to the backend
     if (ws.current && code) {
-      const message = { code };
+      const message = {  content: code };
       ws.current.send(JSON.stringify(message));
     }
   }, [code]);

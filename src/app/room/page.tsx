@@ -66,7 +66,7 @@ const Page: React.FC = () => {
     };
 
     try {
-      const roomId = "3739d2be5661f4ca";
+      const roomId = "140144c065d2ee45";
       setLoading(true);
       const response = await fetch(`http://localhost:8080/join-room`, {
         method: "POST",
