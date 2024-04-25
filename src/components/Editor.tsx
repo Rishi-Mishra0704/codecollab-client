@@ -6,7 +6,11 @@ import { getModeForExtension } from "@/utils/extentions";
 import { EditorProps } from "@/types";
 import { useParams } from "next/navigation";
 
-const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleOutput }) => {
+const CodeEditor: React.FC<EditorProps> = ({
+  fileContent,
+  fileExtension,
+  handleOutput,
+}) => {
   const [theme, setTheme] = useState<string>("monokai");
   const [code, setCode] = useState<string>("");
   const [responseData, setResponseData] = useState<any>(null);
@@ -25,29 +29,33 @@ const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleO
 
     ws.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      
+
       // Update local state with new code received from the server
       setCode(message.content);
     };
     ws.current.onclose = (event) => {
-      console.log("Disconnected from WebSocket server:", event.code, event.reason);
+      console.log(
+        "Disconnected from WebSocket server:",
+        event.code,
+        event.reason
+      );
     };
-    
+
     ws.current.onerror = (error) => {
       console.error("WebSocket error:", error);
     };
-    
+
     // Clean up WebSocket connection
-  return () => {
-    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.close();
-    }
-  };
+    return () => {
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        ws.current.close();
+      }
+    };
   }, [roomId]);
   useEffect(() => {
     // Send initial file extension to the backend
     if (ws.current && code) {
-      const message = {  content: code };
+      const message = { content: code };
       ws.current.send(JSON.stringify(message));
     }
   }, [code]);
@@ -66,7 +74,7 @@ const CodeEditor: React.FC<EditorProps> = ({ fileContent, fileExtension, handleO
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          language: fileExtension, 
+          language: fileExtension,
           code: code,
         }),
       });
